@@ -2,12 +2,12 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 contract Defi {
-
+  // 1 ETH : 1000000000000000000
   uint256 public INVERSE_BASIS_POINT;
 
   uint256 constant INTEREST = 1;
 
-  uint public rates;
+  uint public gasPrice;
 
   mapping (address => uint) public investors;
 
@@ -22,6 +22,7 @@ contract Defi {
   constructor(){
     INVERSE_BASIS_POINT = 100; // sol is not support float type yet.
     owner = msg.sender;
+    gasPrice = 110000000000;
   }
 
   function makeDeposit() payable public {
@@ -44,15 +45,28 @@ contract Defi {
     }
     
   }
-
+  // gas price 를 관리자가 내야하는 상황이기 때문에, 가스비를 추가로 받아야 함
   function payBack() payable public {
-    uint256 interestAmount = borrowers[msg.sender] * (INTEREST / 100);
+    uint256 interestAmount = borrowers[msg.sender] * (INTEREST / 10000);
     if(borrowers[msg.sender] > 0){ // 갚을 돈이 있는 상태
       if(borrowers[msg.sender] >= msg.value){ // 갚으려 하는 돈이 빌린 돈 보다 적은지 
-        if(!payable(owner).send(msg.value + interestAmount)) {
+        if(!payable(owner).send(msg.value + interestAmount + gasPrice)) {
 			    revert();
 		    }
         borrowers[msg.sender] -= (msg.value + interestAmount);
+      }
+    }
+  }
+
+  // gas price 를 관리자가 내야하는 상황이기 때문에, 가스비만큼 적게 환급해야 함.
+  function recoup(address receiverAddr) payable public{
+    uint256 interestAmount = investors[receiverAddr] * (INTEREST / 10000);
+    if(investors[receiverAddr] > 0){ // 환급받을 돈이 있는 상태
+      if(investors[receiverAddr] >= msg.value){ // 환급 받을 돈이 투자한 돈 보다 적은지
+        if(!payable(receiverAddr).send(msg.value + interestAmount - gasPrice)) {
+			    revert();
+		    }
+        investors[receiverAddr] -= (msg.value + interestAmount);
       }
     }
   }
