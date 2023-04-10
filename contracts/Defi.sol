@@ -41,7 +41,7 @@ contract Defi {
     }
     
   }
-  // gas price 를 관리자가 내야하는 상황이기 때문에, 가스비를 추가로 받아야 함
+
   function payBack() payable public {
     uint256 interestAmount = borrowers[msg.sender] * (INTEREST / 10000);
     if(borrowers[msg.sender] > 0){ // 갚을 돈이 있는 상태
