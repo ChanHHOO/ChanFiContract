@@ -51,6 +51,12 @@ contract Defi {
 		    }
         borrowers[msg.sender] -= (msg.value + interestAmount);
       }
+      else{
+        revert("value is higher then debt");
+      }
+    }
+    else{
+      revert("There is not debt");
     }
   }
 
