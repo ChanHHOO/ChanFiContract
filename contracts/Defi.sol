@@ -15,10 +15,6 @@ contract Defi {
 
   address public owner;		// 컨트랙트 소유자
 
-  function hi() public pure returns (string memory) {
-        return ("Hello World");
-  }
-
   constructor(){
     INVERSE_BASIS_POINT = 100; // sol is not support float type yet.
     owner = msg.sender;
@@ -50,7 +46,7 @@ contract Defi {
     uint256 interestAmount = borrowers[msg.sender] * (INTEREST / 10000);
     if(borrowers[msg.sender] > 0){ // 갚을 돈이 있는 상태
       if(borrowers[msg.sender] >= msg.value){ // 갚으려 하는 돈이 빌린 돈 보다 적은지 
-        if(!payable(owner).send(msg.value + interestAmount + gasPrice)) {
+        if(!payable(owner).send(msg.value + interestAmount)) {
 			    revert();
 		    }
         borrowers[msg.sender] -= (msg.value + interestAmount);
@@ -69,6 +65,14 @@ contract Defi {
         investors[receiverAddr] -= (msg.value + interestAmount);
       }
     }
+  }
+
+  function getMyDebt() view public returns(uint){
+    return borrowers[msg.sender];
+  }
+
+  function getMyDeposit() view public returns(uint){
+    return investors[msg.sender];
   }
   
 }
