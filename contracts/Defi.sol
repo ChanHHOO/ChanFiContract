@@ -70,15 +70,20 @@ contract Defi {
 		    }
         investors[receiverAddr] -= (msg.value + interestAmount);
       }
+      else{
+        revert("value is higher then debt");
+      }
+    }
+    else{
+      revert("There is not recoup");
     }
   }
 
-  function getMyDebt() view public returns(uint){
-    return borrowers[msg.sender];
+  function getMyDebt(address user) view public returns(uint){
+    return borrowers[user];
   }
 
-  function getMyDeposit() view public returns(uint){
-    return investors[msg.sender];
+  function getMyDeposit(address user) view public returns(uint){
+    return investors[user];
   }
-  
 }
